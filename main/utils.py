@@ -15,7 +15,7 @@ def encode_sex(sex):
 def train_one_epoch(model, train_loader, optimizer, criterion, device):
     model.train()
     total_loss, total_correct, total_samples = 0, 0, 0
-
+    count = 0 
     for image, view, sex, label in train_loader:
         image = image.to(device)
         view = view.to(device)
@@ -36,12 +36,18 @@ def train_one_epoch(model, train_loader, optimizer, criterion, device):
         total_correct += (preds == label).sum().item()
         total_samples += label.size(0)
 
+        if count% 100 ==0:
+            print("Step", count)
+        count+=1
+
     return total_loss / total_samples, total_correct / total_samples
 
 
 def validate(model, val_loader, criterion, DEVICE):
     model.eval()
     total_loss, total_correct, total_samples = 0, 0, 0
+
+    # count = 0
 
     with torch.no_grad():
 
@@ -62,5 +68,7 @@ def validate(model, val_loader, criterion, DEVICE):
 
             total_correct += (preds == label).sum().item()
             total_samples += label.size(0)
+            # print("val batvh", count)
+            # count+=1
 
     return total_loss / total_samples, total_correct / total_samples

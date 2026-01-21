@@ -24,16 +24,16 @@ del vision_full
 
 def train_model():
 
-    train_csv = "/home/jupyter-nafisha/X-ray/CSVs/train_combined.csv"
-    val_csv = "/home/jupyter-nafisha/X-ray/CSVs/valid_combined.csv"
-    img_dir = '/home/common'
-
+    img_dir = '/home/common/data_v3'
+    train_csv = '/home/jupyter-nafisha/X-ray-covariates/CSVs/train.csv'
+    val_csv = "/home/jupyter-nafisha/X-ray-covariates/CSVs/val.csv"
+    
     # Datasets
     train_dataset = CXRMulitmodalDataset(train_csv, img_dir, transform=None)
     val_dataset = CXRMulitmodalDataset(val_csv, img_dir, transform=None)
 
-    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=4)
-    val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=4)
+    train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=4)
+    val_loader = DataLoader(val_dataset, batch_size=4, shuffle=False, num_workers=4)
 
     # Model
     model = CheXagentSigLIPBinary(vision_encoder= vision_encoder)
@@ -52,13 +52,15 @@ def train_model():
 
 
     # Training
-    EPOCHS = 100
+    EPOCHS = 20
     best_val_acc = 0.0  # to store best accuracy
 
     for epoch in range(EPOCHS):
         
         train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion, device)
         val_loss, val_acc = validate(model, val_loader, criterion, device)
+
+        torch.cuda.empty_cache()
 
         print(f"Epoch {epoch+1}/{EPOCHS}")
         print(f"Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.4f}")
@@ -73,8 +75,8 @@ def train_model():
         # break
 
     # ---- SAVE LAST MODEL ----
-    torch.save(model.state_dict(), "last_model.pth")
-    print("Last model saved as last_model.pth")
+    torch.save(model.state_dict(), "last_model.pt")
+    print("Last model saved as last_model.pt")
 
 
 if __name__ == "__main__":
