@@ -41,11 +41,11 @@ def predict():
     # device= "cpu"
 
     # Load trained model
-    checkpoint_path= '/home/jupyter-nafisha/chexAgent-Normal-Abnormal/main/checkpoints/best_model.pth'
+    checkpoint_path= '/home/jupyter-nafisha/chexAgent-Normal-Abnormal/main/best_model.pth'
     model = CheXagentSigLIPBinary(vision_encoder= vision_encoder)
-    model.to(device)
     ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only= False)
-    model.load_state_dict(ckpt["model_state"])
+    model.load_state_dict(ckpt)
+    model.to(device)
     model.eval()
 
     # Dataset & dataloader

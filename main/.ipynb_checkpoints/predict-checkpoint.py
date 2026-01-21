@@ -11,17 +11,17 @@ MODEL_NAME = "StanfordAIMI/XraySigLIP__vit-l-16-siglip-384__webli"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 dtype = torch.float32
 
-# config = AutoConfig.from_pretrained(
-#     MODEL_NAME,
-#     trust_remote_code=True
-# )
-# vision_full = AutoModel.from_pretrained(
-#     MODEL_NAME,
-#     config=config,
-#     trust_remote_code=True
-# ).to(device, dtype)
-# vision_encoder = vision_full.vision_model
-# del vision_full
+config = AutoConfig.from_pretrained(
+    MODEL_NAME,
+    trust_remote_code=True
+)
+vision_full = AutoModel.from_pretrained(
+    MODEL_NAME,
+    config=config,
+    trust_remote_code=True
+).to(device, dtype)
+vision_encoder = vision_full.vision_model
+del vision_full
 
 def predict():
 
@@ -41,11 +41,11 @@ def predict():
     # device= "cpu"
 
     # Load trained model
-    checkpoint_path= '/home/jupyter-nafisha/chexAgent-Normal-Abnormal/main/checkpoints/best_model.pth'
-    model = CheXagentSigLIPBinary(vision_encoder= None)
-    model.to(device)
+    checkpoint_path= '/home/jupyter-nafisha/chexAgent-Normal-Abnormal/main/best_model.pth'
+    model = CheXagentSigLIPBinary(vision_encoder= vision_encoder)
     ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only= False)
-    model.load_state_dict(ckpt["model_state"])
+    model.load_state_dict(ckpt)
+    model.to(device)
     model.eval()
 
     # Dataset & dataloader
@@ -105,3 +105,7 @@ def predict():
 
 if __name__ == "__main__":
     predict()
+
+
+
+
