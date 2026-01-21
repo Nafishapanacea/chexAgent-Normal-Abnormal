@@ -27,6 +27,8 @@ class CXRMulitmodalDataset(Dataset):
         image_id = row["image_id"]
         img_path = os.path.join(self.img_dir, image_id)
         image = Image.open(img_path).convert("RGB")
+        if self.transforms:
+            image = self.transforms(image)
         inputs = processor(
             images=image,
             return_tensors="pt"

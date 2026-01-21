@@ -4,6 +4,7 @@ from torch import nn, optim
 from dataset import CXRMulitmodalDataset
 from model import CheXagentSigLIPBinary
 from utils import train_one_epoch, validate
+from transforms import train_transforms
 from transformers import AutoModel, AutoProcessor, AutoConfig
 
 MODEL_NAME = "StanfordAIMI/XraySigLIP__vit-l-16-siglip-384__webli"
@@ -29,7 +30,7 @@ def train_model():
     val_csv = "/home/jupyter-nafisha/X-ray-covariates/CSVs/val.csv"
     
     # Datasets
-    train_dataset = CXRMulitmodalDataset(train_csv, img_dir, transform=None)
+    train_dataset = CXRMulitmodalDataset(train_csv, img_dir, transform=train_transforms)
     val_dataset = CXRMulitmodalDataset(val_csv, img_dir, transform=None)
 
     train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=4)
@@ -41,7 +42,9 @@ def train_model():
     model.to(device)
 
     # Loss & Optimizer
-    criterion = nn.BCEWithLogitsLoss()
+    pos_weight = torch.tensor([2.0], device=device)
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+
     optimizer = torch.optim.AdamW(
         [
             {"params": model.vision_encoder.parameters(), "lr": 1e-5},
