@@ -1,3 +1,4 @@
 /main/best_model.pth
 /main/last_model.pth
 .ipynb_checkpoints/
+/checkpoints

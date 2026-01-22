@@ -29,19 +29,19 @@ def predict():
     # img_dir = '/home/jupyter-nafisha/X-ray/Inference_data/NIH-test-dataset'
 
     # padchest dataset
-    test_csv = '/home/jupyter-nafisha/X-ray-covariates/CSVs/PADCHEST_selected_with_reports.csv'
-    img_dir = '/home/jupyter-nafisha/X-ray-covariates/padchest_normalized'
+    # test_csv = '/home/jupyter-nafisha/X-ray-covariates/CSVs/PADCHEST_selected_with_reports.csv'
+    # img_dir = '/home/jupyter-nafisha/X-ray-covariates/padchest_normalized'
 
     # using combined test set
-    # test_csv = '/home/jupyter-nafisha/X-ray-covariates/CSVs/test.csv'
-    # img_dir = '/home/common/data_v3'
+    test_csv = '/home/jupyter-nafisha/X-ray-covariates/CSVs/test.csv'
+    img_dir = '/home/common/data_v3'
 
     
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    # device= "cpu"
+    # device = "cuda" if torch.cuda.is_available() else "cpu"
+    device= "cpu"
 
     # Load trained model
-    checkpoint_path= '/home/jupyter-nafisha/chexAgent-Normal-Abnormal/main/best_model.pth'
+    checkpoint_path= '/home/jupyter-nafisha/chexAgent-Normal-Abnormal/checkpoints/best_model.pth'
     model = CheXagentSigLIPBinary(vision_encoder= vision_encoder)
     ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only= False)
     model.load_state_dict(ckpt)
@@ -65,7 +65,7 @@ def predict():
             sex = sex.to(device)
             label = label.to(device)
 
-            logits = model(images, view, sex)             # shape: (B, 1)
+            _, logits = model(images, view, sex)             # shape: (B, 1)
             probs = torch.sigmoid(logits).squeeze(1)      # shape: (B,)
 
             preds = (probs >= 0.5).long()      # thresholding for binary prediction
@@ -79,8 +79,8 @@ def predict():
         "predicted_label": predictions
     })
 
-    df.to_csv("test_predictions.csv", index=False)
-    print("Predictions saved to test_predictions.csv")
+    # df.to_csv("test_predictions.csv", index=False)
+    # print("Predictions saved to test_predictions.csv")
 
     # ---- METRICS ----
     acc = accuracy_score(true_labels, predictions)

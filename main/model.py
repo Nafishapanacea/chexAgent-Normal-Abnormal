@@ -20,10 +20,10 @@ class CheXagentSigLIPBinary(nn.Module):
         )
 
     def forward(self, inputs, view, sex):
-        outputs = self.vision_encoder(pixel_values=inputs)
+        outputs = self.vision_encoder(pixel_values=inputs, output_hidden_states=False, output_attentions=True)
         embeddings = outputs.pooler_output   
         view_emb = self.view_embedding(view)
         sex_emb = self.sex_embedding(sex)
         combined = torch.cat([embeddings, view_emb, sex_emb], dim=1)
         logits = self.classifier(combined)     
-        return logits
+        return outputs.attentions, logits

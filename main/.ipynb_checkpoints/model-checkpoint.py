@@ -1,12 +1,29 @@
-import torch.nn as nn
-import torchvision.models as models
 import torch
+import torch.nn as nn
 
-def get_model():
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    # device= "cpu"
-    
-    model = models.densenet121(weights="IMAGENET1K_V1")
-    model.classifier = nn.Linear(model.classifier.in_features, 1)
-    
-    return model.to(device)
+class CheXagentSigLIPBinary(nn.Module):
+    def __init__(self, vision_encoder):
+        super().__init__()
+
+        self.vision_encoder = vision_encoder
+        in_dim = vision_encoder.config.hidden_size
+
+        self.view_embedding = nn.Embedding(num_embeddings=3, embedding_dim=8)
+        self.sex_embedding  = nn.Embedding(num_embeddings=2, embedding_dim=4)           
+
+        # Binary classifier head
+        self.classifier = nn.Sequential(
+            nn.Linear(in_dim + 8 + 4, 256),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(256, 1)
+        )
+
+    def forward(self, inputs, view, sex):
+        outputs = self.vision_encoder(pixel_values=inputs, output_hidden_states=False, output_attentions=True)
+        embeddings = outputs.pooler_output   
+        view_emb = self.view_embedding(view)
+        sex_emb = self.sex_embedding(sex)
+        combined = torch.cat([embeddings, view_emb, sex_emb], dim=1)
+        logits = self.classifier(combined)     
+        return outputs.attentions, logits
