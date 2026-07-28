@@ -31,10 +31,14 @@ def predict():
     # padchest dataset
     # test_csv = '/home/jupyter-nafisha/X-ray-covariates/CSVs/PADCHEST_selected_with_reports.csv'
     # img_dir = '/home/jupyter-nafisha/X-ray-covariates/padchest_normalized'
+    # test_csv = '/home/ubuntu/Documents/Nafisha/chest-xray-NormalAbnormal/PADCHEST_selected_with_reports.csv'
+    # img_dir = '/home/ubuntu/Documents/Nafisha/chest-xray-NormalAbnormal/test_padchest_CLAHE'
 
     # using combined test set
     test_csv = '/home/jupyter-nafisha/X-ray-covariates/CSVs/test.csv'
     img_dir = '/home/common/data_v3'
+    test_csv = '/home/ubuntu/Documents/Nafisha/chest-xray-NormalAbnormal/chexAgent-Normal-Abnormal/CSVs/test.csv'
+    img_dir = '/home/ubuntu/Documents/Nafisha/chest-xray-NormalAbnormal/data_v3_CLAHE'
 
     
     # device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -42,6 +46,7 @@ def predict():
 
     # Load trained model
     checkpoint_path= '/home/jupyter-nafisha/chexAgent-Normal-Abnormal/checkpoints/best_model.pth'
+    checkpoint_path= '/home/ubuntu/Documents/Nafisha/chest-xray-NormalAbnormal/chexAgent-Normal-Abnormal/main/best_model.pth'
     model = CheXagentSigLIPBinary(vision_encoder= vision_encoder)
     ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only= False)
     model.load_state_dict(ckpt)
@@ -79,6 +84,8 @@ def predict():
         "predicted_label": predictions
     })
 
+    # df.to_csv("test_predictions.csv", index=False)
+    # print("Predictions saved to test_predictions.csv")
     # df.to_csv("test_predictions.csv", index=False)
     # print("Predictions saved to test_predictions.csv")
 

@@ -1,4 +1,9 @@
-/main/best_model.pth
+/main/best_model_pos2.pth
+/main/last_model_pos2.pt
+/main/best_model_pos4.pth
 /main/last_model.pth
+/main/last_model.pt
 .ipynb_checkpoints/
 /checkpoints
+__pycache__/
+*.pyc

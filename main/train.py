@@ -25,9 +25,9 @@ del vision_full
 
 def train_model():
 
-    img_dir = '/home/common/data_v3'
-    train_csv = '/home/jupyter-nafisha/X-ray-covariates/CSVs/train.csv'
-    val_csv = "/home/jupyter-nafisha/X-ray-covariates/CSVs/val.csv"
+    img_dir = '/home/ubuntu/Documents/Nafisha/chest-xray-NormalAbnormal/data_v3_CLAHE'
+    train_csv = '/home/ubuntu/Documents/Nafisha/chest-xray-NormalAbnormal/chexAgent-Normal-Abnormal/CSVs/train.csv'
+    val_csv = "/home/ubuntu/Documents/Nafisha/chest-xray-NormalAbnormal/chexAgent-Normal-Abnormal/CSVs/val.csv"
     
     # Datasets
     train_dataset = CXRMulitmodalDataset(train_csv, img_dir, transform=train_transforms)
@@ -42,7 +42,7 @@ def train_model():
     model.to(device)
 
     # Loss & Optimizer
-    pos_weight = torch.tensor([2.0], device=device)
+    pos_weight = torch.tensor([4.0], device=device)
     criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
     optimizer = torch.optim.AdamW(
@@ -53,10 +53,9 @@ def train_model():
         weight_decay=1e-4
     )
 
-
     # Training
-    EPOCHS = 20
-    best_val_acc = 0.0  # to store best accuracy
+    EPOCHS = 12
+    least_val_loss = float("inf")  # to store best accuracy
 
     for epoch in range(EPOCHS):
         
@@ -71,17 +70,16 @@ def train_model():
         print("-" * 50)
 
         # ---- SAVE BEST MODEL ----
-        if val_acc > best_val_acc:
-            best_val_acc = val_acc
+        if least_val_loss > val_loss:
+            least_val_loss = val_loss
             torch.save(model.state_dict(), "best_model.pth")
-            print(f"Best model updated with val_acc = {best_val_acc:.4f}")
+            print(f"Best model updated with val_acc = {val_acc:.4f}")
         # break
 
     # ---- SAVE LAST MODEL ----
-    torch.save(model.state_dict(), "last_model.pt")
+    torch.save(model.state_dict(), "last_model.pth")
     print("Last model saved as last_model.pt")
 
 
 if __name__ == "__main__":
     train_model()
-

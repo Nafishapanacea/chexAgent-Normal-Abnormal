@@ -40,6 +40,6 @@ train_transforms = T.Compose([
         contrast=0.15
     ),
 
-    ApplyCLAHE(clip_limit=2.0, tile_grid_size=(8, 8)),
+    # ApplyCLAHE(clip_limit=2.0, tile_grid_size=(8, 8)),
     
 ])

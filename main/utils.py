@@ -36,7 +36,7 @@ def train_one_epoch(model, train_loader, optimizer, criterion, device):
         total_correct += (preds == label).sum().item()
         total_samples += label.size(0)
 
-        if count% 100 ==0:
+        if count% 500 ==0:
             print("Step", count)
         count+=1
 
